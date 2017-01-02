@@ -18,7 +18,7 @@ export interface IPicoBrewService {
 }
 
 export class PicoBrewService implements IPicoBrewService {
-    private basePath = 'https://picobrew.com/Json/brewhouseJson.cshtml?user=' + config.userId;
+    private basePath = 'https://picobrew.com/Json/brewhouseJson.cshtml?user=' + config.picobrewUserId;
 
     // strange constructor trick to allow mocking in tests
     constructor(private rp: typeof requestPromise = require('request-promise')) {
