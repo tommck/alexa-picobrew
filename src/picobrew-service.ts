@@ -1,20 +1,18 @@
 /**
- * TODO: Peel this off into its own github repo
+ * TODO: Peel this off into its own github repo/npm package
  */
-
 import requestPromise = require('request-promise');
 import { config } from './config';
+import { log } from './common/log';
 
 import * as API from './picobrew/index';
 
 export interface IPicoBrewService {
-    isCurrentlyBrewing(): Promise<Boolean>;
-    getActiveSessionId(): Promise<string>;
     getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary>;
     getMachines(): Promise<API.IMachineInfo[]>;
-    getMachineState(id: number): API.IMachineInfo;
+    getMachineState(id: number): Promise<API.IMachineInfo>;
 
-    // TODO: expose login and allow the intents to chain commands.
+    login(user: string, pass: string): requestPromise.RequestPromise;
 
     // TODO: add more functions
 }
@@ -22,31 +20,19 @@ export interface IPicoBrewService {
 export class PicoBrewService implements IPicoBrewService {
     private basePath = 'https://picobrew.com/Json/brewhouseJson.cshtml?user=' + config.userId;
 
+    // strange constructor trick to allow mocking in tests
     constructor(private rp: typeof requestPromise = require('request-promise')) {
-    }
-
-    isCurrentlyBrewing(): Promise<Boolean> {
-        return this.get(`${this.basePath}&justname=5&_=${new Date().getTime()}`)
-            .then(function (data) {
-                return data.replace(/"/g, '') === 'active';
-            });
-    }
-
-    getActiveSessionId(): Promise<string> {
-        return this.get(`${this.basePath}&justname=3&_=${new Date().getTime()}`)
-            .then(function (data) {
-                return data !== '""' ? data.GUID : undefined;
-            });
+        console.info('CONSTRUCTED');
     }
 
     getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary> {
         return this.get(`${this.basePath}&requestGUID=${sessionId}&ignoreWhetherCurrent=true&justname=3&_=${new Date().getTime()}`)
             .then((data: any): API.ISessionSummary => {
                 if (data === '""') {
-                    console.error('no data for sessionId', data);
+                    log.error('no data for sessionId', data);
                     return;
                 }
-                this.debug('session info: ', data);
+                log.debug('session info: ', data);
                 var result: API.ISessionSummary = {
                     sessionId: sessionId,
                     name: data.Name,
@@ -61,35 +47,31 @@ export class PicoBrewService implements IPicoBrewService {
             });
     }
 
-    login(cookieJar) {
+    login(user: string, pass: string): requestPromise.RequestPromise {
+
         // login url directly from picobrew code
         var url = 'https://picobrew.com/account/loginAjax.cshtml?returnURL=https://picobrew.com/members/user/brewhouse.cshtml';
 
         return this.send('POST', url, {
             resolveWithFullResponse: true,
-            jar: cookieJar,
+            jar: true,
             followAllRedirects: true
         }).form({
-            username: config.auth.user,
-            password: config.auth.pass
+            username: user,
+            password: pass
         });
     }
 
-    getMachineState(id: number): API.IMachineInfo {
-        var cookieJar = this.rp.jar();
+    getMachineState(id: number): Promise<API.IMachineInfo> {
+        // casting hack because request-promise's typings are incorrect
         return this
-            .login(cookieJar)
-            .then((resp) => {
-                return this
-                    .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
-                        jar: cookieJar,
-                        followAllRedirects: true
-                    })
-                    .form({
-                        id: id,
-                        option: 'getZymatic',
-                        getActiveSession: true
-                    });
+            .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
+                followAllRedirects: true
+            })
+            .form({
+                id: id,
+                option: 'getZymatic',
+                getActiveSession: true
             })
             .then((mach: any) => {
                 return API.serverHelpers.ResponseToIMachineInfo(mach);
@@ -97,35 +79,34 @@ export class PicoBrewService implements IPicoBrewService {
     }
 
     getMachines(): Promise<API.IMachineInfo[]> {
-        var cookieJar = this.rp.jar();
+        log.debug('Getting Machines');
 
-        return this.login(cookieJar)
-            .then((resp) => {
-
-                return this.send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
-                    jar: cookieJar,
-                    followAllRedirects: true
-                }).form({
-                    option: 'getZymaticsForUser',
-                    getActiveSession: false
-                }).then((data: any[]) => {
-                    let result: API.IMachineInfo[] = [];
-                    data.forEach((mach: any) => {
-                        result.push(API.serverHelpers.ResponseToIMachineInfo(mach));
-                    });
-                    return result;
-                })
-            });
+        return this
+            .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
+                followAllRedirects: true,
+                jar: true
+            })
+            .form({
+                option: 'getZymaticsForUser',
+                getActiveSession: false
+            })
+            .then((data: any[]) => {
+                let result: API.IMachineInfo[] = [];
+                data.forEach((mach: any) => {
+                    result.push(API.serverHelpers.ResponseToIMachineInfo(mach));
+                });
+                return result;
+            })
     }
 
-    private get(path: string): Promise<any> {
+    private get(path: string): requestPromise.RequestPromise {
         return this.send('GET', path);
     }
 
-    private post(path: string, formData?: any): Promise<any> {
+    private post(path: string, formData?: any): requestPromise.RequestPromise {
         var req = this.send('POST', path);
         if (formData) {
-            this.debug('Form Data:', formData);
+            log.debug('Form Data:', formData);
             req.form(formData);
         }
         return req;
@@ -134,14 +115,14 @@ export class PicoBrewService implements IPicoBrewService {
     private send(
         method: 'GET' | 'POST',
         path: string,
-        opts: any = null) {
+        opts: any = null): requestPromise.RequestPromise {
         var url = path;
 
         if (config.testServer) {
             url = 'http://localhost:4567' + path;
         }
 
-        this.debug(`${method}ting: ${url}`);
+        log.debug(`${method}ting: ${url}`);
 
         const options = {
             ...opts,
@@ -152,20 +133,14 @@ export class PicoBrewService implements IPicoBrewService {
         }
         return this.rp(options);
     }
-
-    private debug(...args: any[]) {
-        if (config.debug) {
-            console.log.apply(console, arguments);
-        }
-    }
 }
 
 export interface IPicoBrewServiceFactory {
-    createService() : IPicoBrewService;
+    createService(): IPicoBrewService;
 }
 
 export const PicoBrewServiceFactory: IPicoBrewServiceFactory = {
-    createService() : IPicoBrewService {
+    createService(): IPicoBrewService {
         return new PicoBrewService();
     }
 };

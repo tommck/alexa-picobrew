@@ -1,6 +1,7 @@
 import PicoBrew = require('../src/picobrew-service');
 
 import { IMachineInfo } from '../src/picobrew/index';
+import { config } from '../src/config';
 
 // change this to false if you want to make real calls with the tests
 var USE_FAKE_CALLS = true;
@@ -14,63 +15,6 @@ describe('picoService', () => {
         }
         return new PicoBrew.PicoBrewService();
     }
-
-    describe('isCurrentlyBrewing', () => {
-        describe('with no current session', () => {
-            beforeEach(() => {
-                let mockRequestPromise = jasmine.createSpy('requestPromise').and.returnValue(Promise.resolve('foo'));
-                service = createService(mockRequestPromise);
-            });
-
-            it('should return false', () => {
-                return service.isCurrentlyBrewing().then(function (isBrewing) {
-                    expect(isBrewing).toEqual(false);
-                });
-            });
-        });
-
-        describe('with a current session', () => {
-            beforeEach(() => {
-                let mockRequestPromise = jasmine.createSpy('requestPromise').and.returnValue(Promise.resolve('active'));
-                service = createService(mockRequestPromise);
-            });
-
-            it('should return true', () => {
-                return service.isCurrentlyBrewing().then(function (isBrewing) {
-                    expect(isBrewing).toEqual(true);
-                });
-            });
-        });
-    });
-
-    describe('getActiveSessionId', () => {
-        describe('with active session', () => {
-            beforeEach(() => {
-                let mockRequestPromise = jasmine.createSpy('requestPromise').and.returnValue(Promise.resolve({ GUID: 'hello' }));
-                service = createService(mockRequestPromise);
-            });
-
-            it('should return the GUID', () => {
-                return service.getActiveSessionId().then((id: string) => {
-                    expect(id).toEqual('hello');
-                });
-
-            });
-        });
-
-        describe('with no active session', () => {
-            beforeEach(() => {
-                let mockRequestPromise = jasmine.createSpy('requestPromise').and.returnValue(Promise.resolve('""'));
-                service = createService(mockRequestPromise);
-            });
-
-            it('should return the GUID', () => {
-                return service.getActiveSessionId().then((id: string) => {
-                    expect(id).toBeUndefined(undefined);
-                });
-            });
-        });
-    });
 
     describe('getMachines', () => {
         beforeEach(() => {
@@ -123,22 +67,29 @@ describe('picoService', () => {
             // form is just a pass-through
             response.form = jasmine.createSpy('requestPromise').and.returnValue(response);
 
-            let mockRequestPromise:any = jasmine.createSpy('requestPromise').and.returnValue(response);
-            mockRequestPromise.jar = jasmine.createSpy('jar');
+            let mockRequestPromise: any = jasmine.createSpy('requestPromise').and.returnValue(response);
 
             service = createService(mockRequestPromise);
         });
 
-        it('should return an array of machines', () => {
-            return service.getMachines().then((machines: IMachineInfo[]) => {
-                expect(machines.length).toEqual(1);
-            });
+        it('should return an array of machines', (done) => {
+            return service
+                .login(config.auth.user, config.auth.pass)
+                .then(() => service.getMachines())
+                .then((machines: IMachineInfo[]) => {
+                    expect(machines.length).toEqual(1);
+                    done();
+                });
         });
 
-        it('should have ActiveSession on the machines', () => {
-            return service.getMachines().then((machines: IMachineInfo[]) => {
-                expect(machines[0].activeSession).toBeDefined();
-            });
+        it('should have ActiveSession on the machines', (done) => {
+            return service
+                .login(config.auth.user, config.auth.pass)
+                .then(() => service.getMachines())
+                .then((machines: IMachineInfo[]) => {
+                    expect(machines[0].activeSession).toBeTruthy();
+                    done();
+                });
         })
     });
 });

@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { PicoBrewServiceFactory } from '../picobrew-service';
 import { IMachineInfo } from '../picobrew/index';
 import { intentHelpers } from './intent-helpers';
+import { config } from '../config';
 
 const momentCalendarOptions: moment.CalendarSpec = {
     sameDay: '[Today at] LT',
@@ -18,8 +19,12 @@ export function LastBrewIntent(this: Handler) {
 
     const service = PicoBrewServiceFactory.createService();
 
-    service.getMachines()
+    service.login(config.auth.user, config.auth.pass)
+        .then(() => {
+            return service.getMachines();
+        })
         .then((machines: IMachineInfo[]) => {
+            // TODO: encapsulate getting the machine somehow
             console.info('Machines:', machines);
 
             if (machines.length > 1) {
@@ -43,7 +48,7 @@ export function LastBrewIntent(this: Handler) {
             }
 
             const lastBrewInEnglish = moment(status.lastBrewStart).calendar(null, momentCalendarOptions);
-            return `The last brew you did was ${lastBrewInEnglish}`;
+            return `The last time you brewed was ${lastBrewInEnglish}`;
         })
         .then((msg: string) => {
             this.emit(':tell', msg);

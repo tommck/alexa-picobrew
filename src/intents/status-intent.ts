@@ -5,11 +5,18 @@ import { IMachineInfo } from '../picobrew/index';
 
 import { intentHelpers } from './intent-helpers';
 
+import { log } from '../common/log';
+
+import { config } from '../config';
+
 export function StatusIntent(this: Handler) {
 
     const service = PicoBrewServiceFactory.createService();
 
-    service.getMachines()
+    service.login(config.auth.user, config.auth.pass)
+        .then(() => {
+            return service.getMachines();
+        })
         .then((machines: IMachineInfo[]) => {
             console.info('Machines:', machines);
 
@@ -23,7 +30,7 @@ export function StatusIntent(this: Handler) {
             return service.getMachineState(machines[0].id);
         })
         .then((status: IMachineInfo | string) => {
-            console.info('Machine State:', status);
+            log.info('Machine State:', status);
 
             if (typeof status === 'string') {
                 return status;
