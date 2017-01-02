@@ -5,6 +5,7 @@ import { PicoBrewServiceFactory } from '../picobrew-service';
 import { IMachineInfo } from '../picobrew/index';
 import { intentHelpers } from './intent-helpers';
 import { config } from '../config';
+import { log } from '../common/log';
 
 const momentCalendarOptions: moment.CalendarSpec = {
     sameDay: '[Today at] LT',
@@ -25,7 +26,7 @@ export function LastBrewIntent(this: Handler) {
         })
         .then((machines: IMachineInfo[]) => {
             // TODO: encapsulate getting the machine somehow
-            console.info('Machines:', machines);
+            log.info('Machines:', machines);
 
             if (machines.length > 1) {
                 // TODO: "ask" the user
@@ -37,7 +38,7 @@ export function LastBrewIntent(this: Handler) {
             return service.getMachineState(machines[0].id);
         })
         .then((status: IMachineInfo | string) => {
-            console.info('Machine State:', status);
+            log.info('Machine State:', status);
 
             if (typeof status === 'string') {
                 return status;

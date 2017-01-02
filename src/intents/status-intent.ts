@@ -18,7 +18,7 @@ export function StatusIntent(this: Handler) {
             return service.getMachines();
         })
         .then((machines: IMachineInfo[]) => {
-            console.info('Machines:', machines);
+            log.info('Machines:', machines);
 
             if (machines.length > 1) {
                 // TODO: "ask" the user

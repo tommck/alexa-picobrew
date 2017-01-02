@@ -22,7 +22,7 @@ export class PicoBrewService implements IPicoBrewService {
 
     // strange constructor trick to allow mocking in tests
     constructor(private rp: typeof requestPromise = require('request-promise')) {
-        console.info('CONSTRUCTED');
+        log.info('CONSTRUCTED');
     }
 
     getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary> {
