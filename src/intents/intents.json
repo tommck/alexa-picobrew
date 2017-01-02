@@ -1,0 +1,16 @@
+{
+    "intents": [
+        {
+            "intent": "AboutIntent",
+            "slots": []
+        },
+        {
+            "intent": "StatusIntent",
+            "slots": []
+        },
+        {
+            "intent": "LastBrewIntent",
+            "slots": []
+        }
+   ]
+}

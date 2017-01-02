@@ -1,0 +1,13 @@
+AboutIntent who wrote this skill
+AboutIntent who is the auther of this app
+
+StatusIntent what the status is
+StatusIntent what the current state is
+StatusIntent what's the status
+StatusIntent what it's doing
+
+LastBrewIntent when my last brew was
+LastBrewIntent when the last brew was
+LastBrewIntent when's the last time I brewed
+LastBrewIntent when did I brew last
+

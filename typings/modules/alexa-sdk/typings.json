@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/128567f71123bee9aea5e8fe5cdd5e1a183402d8/alexa-sdk/index.d.ts",
+    "raw": "registry:dt/alexa-sdk#1.0.3+20161220165655",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/128567f71123bee9aea5e8fe5cdd5e1a183402d8/alexa-sdk/index.d.ts"
+  }
+}

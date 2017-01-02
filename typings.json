@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "alexa-sdk": "registry:dt/alexa-sdk#1.0.3+20161220165655"
+  }
+}

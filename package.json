@@ -1,0 +1,34 @@
+{
+  "name": "zymatic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc && jasmine",
+    "test-watch": "nodemon -e ts --ignore node_modules/ --exec \"npm run test\" ",
+    "build": "rimraf dist && tsc -p tsconfig.build.json"
+  },
+  "author": "Tom McKearney",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-sdk": "^1.0.6",
+    "lodash": "^4.17.3",
+    "moment": "^2.17.1",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.5.40",
+    "@types/node": "^4.0.30",
+    "@types/sinon": "^1.16.34",
+    "aws-lambda-mock-context": "^3.0.1",
+    "chai": "^3.5.0",
+    "jasmine": "^2.5.2",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "proxyquire": "^1.7.10",
+    "sinon": "^1.17.7",
+    "typemoq": "^1.0.3",
+    "watch": "latest"
+  }
+}
