@@ -42,6 +42,10 @@ export function LastBrewIntent(this: Handler) {
             if (typeof status === 'string') {
                 return status;
             }
+            if (!status) {
+                // TODO: better error handling concept
+                return 'No Machine Information Retrieved';
+            }
             var session = status.activeSession;
             if (session) {
                 return 'Didn\'t you know? ' + intentHelpers.getBrewDescriptionFromSession(session);

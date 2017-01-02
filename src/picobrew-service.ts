@@ -54,7 +54,6 @@ export class PicoBrewService implements IPicoBrewService {
 
         return this.send('POST', url, {
             resolveWithFullResponse: true,
-            jar: true,
             followAllRedirects: true
         }).form({
             username: user,
@@ -63,6 +62,8 @@ export class PicoBrewService implements IPicoBrewService {
     }
 
     getMachineState(id: number): Promise<API.IMachineInfo> {
+        log.info(`Getting Machine state for ID:${id}`);
+
         // casting hack because request-promise's typings are incorrect
         return this
             .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
@@ -74,6 +75,7 @@ export class PicoBrewService implements IPicoBrewService {
                 getActiveSession: true
             })
             .then((mach: any) => {
+                log.debug('Results of POST:', mach);
                 return API.serverHelpers.ResponseToIMachineInfo(mach);
             });
     }
@@ -83,8 +85,7 @@ export class PicoBrewService implements IPicoBrewService {
 
         return this
             .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
-                followAllRedirects: true,
-                jar: true
+                followAllRedirects: true
             })
             .form({
                 option: 'getZymaticsForUser',
@@ -127,6 +128,7 @@ export class PicoBrewService implements IPicoBrewService {
         const options = {
             ...opts,
             method: method,
+            jar: true,
             url: url,
             json: true,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }

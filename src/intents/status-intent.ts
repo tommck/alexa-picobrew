@@ -35,6 +35,10 @@ export function StatusIntent(this: Handler) {
             if (typeof status === 'string') {
                 return status;
             }
+            if (!status) {
+                // TODO: better error handling concept
+                return 'No Machine Information Retrieved';
+            }
             return intentHelpers.getBrewDescriptionFromSession(status.activeSession);
         })
         .then((msg: string) => {
