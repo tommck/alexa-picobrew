@@ -1,10 +1,10 @@
 # alexa-picobrew
-All you need to integrate your PicoBrew Zymatic (and Pico?) with the Amazon Echo (Alexa)
+All you need to integrate your [PicoBrew Zymatic](https://picobrew.com/Store/products/zymatic.cshtml) (and Pico?) with the Amazon Echo (Alexa)
 
-NOTE: This is written using TypeScript and NodeJS
+**DISCLAIMER: I am not in any way affiliated with PicoBrew Inc. This is an UNSUPPORTED, UNOFFICIAL application written because I wanted it.**
 
 # Usage
-    You:"Alexa, ask PicoBrew..."
+    You: "Alexa, ask PicoBrew..."
 
 ## Current Status
         "...what the current state is"
@@ -75,6 +75,9 @@ TODO
 
 # TroubleShooting
 TODO
+
+# Technologies
+This is written using TypeScript and NodeJS.
 
 # Acknowldgements
 Thanks to [Ryan Graciano](http://ryangraciano.com) and his [echo-sonos](https://github.com/rgraciano/echo-sonos) project for inspiring me to take this on.
