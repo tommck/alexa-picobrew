@@ -6,7 +6,7 @@ import { config } from '../src/config';
 // change this to false if you want to make real calls with the tests
 var USE_FAKE_CALLS = true;
 
-describe('picoService', () => {
+describe('picobrew-service', () => {
     let service: PicoBrew.IPicoBrewService;
 
     function createService(mockRequestPromise): PicoBrew.IPicoBrewService {
@@ -74,7 +74,7 @@ describe('picoService', () => {
 
         it('should return an array of machines', (done) => {
             return service
-                .login(config.auth.user, config.auth.pass)
+                .login(config.picobrew.auth.user, config.picobrew.auth.pass)
                 .then(() => service.getMachines())
                 .then((machines: IMachineInfo[]) => {
                     expect(machines.length).toEqual(1);
@@ -84,7 +84,7 @@ describe('picoService', () => {
 
         it('should have ActiveSession on the machines', (done) => {
             return service
-                .login(config.auth.user, config.auth.pass)
+                .login(config.picobrew.auth.user, config.picobrew.auth.pass)
                 .then(() => service.getMachines())
                 .then((machines: IMachineInfo[]) => {
                     expect(machines[0].activeSession).toBeTruthy();

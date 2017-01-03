@@ -11,6 +11,7 @@ export interface IPicoBrewService {
     getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary>;
     getMachines(): Promise<API.IMachineInfo[]>;
     getMachineState(id: number): Promise<API.IMachineInfo>;
+    getSessionHistory(): Promise<API.ISession[]>;
 
     login(user: string, pass: string): requestPromise.RequestPromise;
 
@@ -18,11 +19,26 @@ export interface IPicoBrewService {
 }
 
 export class PicoBrewService implements IPicoBrewService {
-    private basePath = 'https://picobrew.com/Json/brewhouseJson.cshtml?user=' + config.picobrewUserId;
+    private basePath = 'https://picobrew.com/Json/brewhouseJson.cshtml?user=' + config.picobrew.userId;
 
     // strange constructor trick to allow mocking in tests
     constructor(private rp: typeof requestPromise = require('request-promise')) {
         log.info('CONSTRUCTED');
+    }
+
+    getSessionHistory() : Promise<API.ISession[]> {
+        return this
+            .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/ZymaticSession.cshtml')
+            .form({
+                option: 'getAllSessionsForUser'
+            })
+            .then((sessions: any[]) => {
+                let result: API.ISession[] = [];
+                sessions.forEach((sess: any) => {
+                    result.push(API.serverHelpers.ResponseToISession(sess));
+                });
+                return result;
+            });
     }
 
     getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary> {
@@ -48,6 +64,7 @@ export class PicoBrewService implements IPicoBrewService {
     }
 
     login(user: string, pass: string): requestPromise.RequestPromise {
+        log.info('Logging in');
 
         // login url directly from picobrew code
         var url = 'https://picobrew.com/account/loginAjax.cshtml?returnURL=https://picobrew.com/members/user/brewhouse.cshtml';
@@ -64,7 +81,6 @@ export class PicoBrewService implements IPicoBrewService {
     getMachineState(id: number): Promise<API.IMachineInfo> {
         log.info(`Getting Machine state for ID:${id}`);
 
-        // casting hack because request-promise's typings are incorrect
         return this
             .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
                 followAllRedirects: true
@@ -81,7 +97,7 @@ export class PicoBrewService implements IPicoBrewService {
     }
 
     getMachines(): Promise<API.IMachineInfo[]> {
-        log.debug('Getting Machines');
+        log.info('Getting Machines');
 
         return this
             .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
@@ -96,6 +112,7 @@ export class PicoBrewService implements IPicoBrewService {
                 data.forEach((mach: any) => {
                     result.push(API.serverHelpers.ResponseToIMachineInfo(mach));
                 });
+                log.debug('Returning Machines', result);
                 return result;
             })
     }

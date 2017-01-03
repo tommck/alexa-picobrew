@@ -7,20 +7,11 @@ import { intentHelpers } from './intent-helpers';
 import { config } from '../config';
 import { log } from '../common/log';
 
-const momentCalendarOptions: moment.CalendarSpec = {
-    sameDay: '[Today at] LT',
-    nextDay: '[Tomorrow at] LT',
-    nextWeek: 'dddd',
-    lastDay: '[Yesterday at] LT',
-    lastWeek: '[Last] dddd [at] LT',
-    sameElse: 'LL [at] LT'
-};
-
 export function LastBrewIntent(this: Handler) {
 
     const service = PicoBrewServiceFactory.createService();
 
-    service.login(config.auth.user, config.auth.pass)
+    service.login(config.picobrew.auth.user, config.picobrew.auth.pass)
         .then(() => {
             return service.getMachines();
         })
@@ -52,7 +43,7 @@ export function LastBrewIntent(this: Handler) {
                 return 'Didn\'t you know? ' + intentHelpers.getBrewDescriptionFromSession(session);
             }
 
-            const lastBrewInEnglish = moment(status.lastBrewStart).calendar(null, momentCalendarOptions);
+            const lastBrewInEnglish = intentHelpers.toEnglishCalendarTime(status.lastBrewStart);
             return `The last time you brewed was ${lastBrewInEnglish}`;
         })
         .then((msg: string) => {

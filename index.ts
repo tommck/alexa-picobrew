@@ -12,7 +12,9 @@ export class handler {
         alexa.registerHandlers({
             AboutIntent: intents.AboutIntent,
             StatusIntent: intents.StatusIntent,
-            LastBrewIntent: intents.LastBrewIntent
+            LastBrewIntent: intents.LastBrewIntent,
+            BrewsSinceCleaningIntent: intents.BrewsSinceCleaningIntent,
+            RinseAfterLastBrewIntent: intents.RinseAfterLastBrewIntent
         });
         alexa.execute();
     }

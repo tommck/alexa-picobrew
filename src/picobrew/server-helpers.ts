@@ -1,10 +1,37 @@
 
+type BrewType = 'Cleaning' | 'Rinse' | 'Brewing' | 'SousVide';
+// TODO: Enum?
+function brewType(serverData: any): BrewType {
+    let result: BrewType;
+
+    switch (serverData.BrewType) {
+        case 'SousVide':
+            result = 'SousVide';
+            break;
+
+        case 'Cleaning':
+            if (serverData.BeerName.startsWith('Cleaning')) {
+                result = 'Cleaning';
+            }
+            else {
+                result = 'Rinse';
+            }
+            break;
+
+        default:
+            result = 'Brewing';
+            break;
+    }
+
+    return result;
+}
+
 function ResponseToISession(data) {
     return data && {
         id: data.ID,  // session id.
         profileId: data.ProfileID, // user profile
         machineType: data.MachineType,
-        brewType: data.BrewType,
+        brewType: brewType(data),
         wortTemp: data.WortTemp,
         blockTemp: data.BlockTemp,
         targedAbv: data.TargetABV,

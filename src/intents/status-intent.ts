@@ -13,7 +13,7 @@ export function StatusIntent(this: Handler) {
 
     const service = PicoBrewServiceFactory.createService();
 
-    service.login(config.auth.user, config.auth.pass)
+    service.login(config.picobrew.auth.user, config.picobrew.auth.pass)
         .then(() => {
             return service.getMachines();
         })

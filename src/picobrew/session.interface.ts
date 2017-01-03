@@ -7,7 +7,7 @@ export interface ISession {
     id: number; // "ID": 132826,
     profileId: number; // "ProfileID": 7637,
     machineType: 'Zymatic' | 'Pico'; //"MachineType": "Zymatic"
-    brewType: string; // "BrewType": "Cleaning",
+    brewType: 'Cleaning' | 'Rinse' | 'Brewing' | 'SousVide';
     wortTemp: number; // "WortTemp": 0,
     blockTemp: number; // "BlockTemp": 0,
     targedAbv: number; // "TargetABV": 0.1,
@@ -18,7 +18,7 @@ export interface ISession {
     og: number; // "OG": null,
     fg: number; // "FG": null,
     stepName: string; // "StepName": "Heat Water",
-    beerName: string; // "BeerName": "Cleaning v1",
+    beerName: string; // starts with "Cleaning" if it's a clean and starts with "Rinse" if it's a rinse
     brewerName: string; // "BrewerName": "PicoPrograms",
     beerStyle: string; // "BeerStyle": "Lite American Lager",
     guid: GUID; // "GUID": "da859f48ccde42b1a67f769f987b5926",

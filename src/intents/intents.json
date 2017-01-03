@@ -11,6 +11,14 @@
         {
             "intent": "LastBrewIntent",
             "slots": []
+        },
+        {
+            "intent": "BrewsSinceCleaningIntent",
+            "slots": []
+        },
+        {
+            "intent": "RinseAfterLastBrewIntent",
+            "slots": []
         }
    ]
 }
