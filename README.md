@@ -4,23 +4,50 @@ All you need to integrate your PicoBrew Zymatic (and Pico?) with the Amazon Echo
 NOTE: This is written using TypeScript and NodeJS
 
 # Usage
+    You:"Alexa, ask PicoBrew..."
 
-Current Status:
+## Current Status
+        "...what the current state is"
+        "...what's the status"
+        "...what it's doing"
+        "...what the status is"
 
-    You: "Alexa, ask PicoBrew what it's doing"
     Alexa: "Your machine is currently brewing 'Beer Name'. The current step is 'Step Name'"
-
-    You: "Alexa, ask PicoBrew what it's doing"
     Alexa: "Your machine is currently Cleaning. The current step is 'Heat Water'"
+    Alexa: "Your machine is idle"
 
-History:
+## Last Brew
 
-    You: "Alexa, ask PicoBrew when the last time I brewed was"
+    "...when my last brew was"
+    "...when the last brew was"
+    "...when's the last time I brewed"
+    "...when did I brew last"
+
     Alexa: "The last time you brewed was Last Wednesday at 4:36pm"
+    Alexa: "The last time you brewed was December 25th, 2016 at 11:07am"
 
-Future Features:
 
-    **much more to come**
+## Did I Rinse?
+    "...if I rinsed after my last brew"
+    "...did I rinse after my/the last brew?"
+    "...if I rinsed"
+
+    Alexa: "No, You did NOT rinse after your last brew"
+    Alexa: "You are brewing now. Though after your previous brew you did. Don't forget to rinse this time!"
+    Alexa: "No you didn't, but you cleaned, so you're OK"
+
+## Brews Since Cleaning
+    "...how many times I have brewed since the last clean(ing)"
+    "...how many brews since it was cleaned"
+    "...how many brews I've done since it was cleaned"
+    "......when it was last cleaned"
+
+    Alexa: "You have never cleaned or brewed on this machine"
+    Alexa: "You last cleaned Last Friday at 8:05pm. You have brewed one time since then"
+
+## Future Features:
+
+    **more to come**
 
 # How it works
 TODO

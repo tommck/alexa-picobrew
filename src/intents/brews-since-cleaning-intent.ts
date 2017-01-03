@@ -56,7 +56,7 @@ export function BrewsSinceCleaningIntent(this: Handler) {
 
             const timesText = (cleaningIndex === 1) ? 'one time' : `${cleaningIndex} times`;
 
-            return `You lasted cleaned ${intentHelpers.toEnglishCalendarTime(cleaningDateTiem)}. You have brewed ${timesText} since then`;
+            return `You last cleaned ${intentHelpers.toEnglishCalendarTime(cleaningDateTiem)}. You have brewed ${timesText} since then`;
         })
         .then((msg: string) => {
             this.emit(':tell', msg);

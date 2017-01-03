@@ -12,6 +12,7 @@ LastBrewIntent when's the last time I brewed
 LastBrewIntent when did I brew last
 
 BrewsSinceCleaningIntent how many times I have brewed since the last cleaning
+BrewsSinceCleaningIntent how many times I have brewed since the last clean
 BrewsSinceCleaningIntent how many brews since it was cleaned
 BrewsSinceCleaningIntent how many brews I've done since it was cleaned
 BrewsSinceCleaningIntent when it was last cleaned

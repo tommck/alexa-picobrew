@@ -31,7 +31,36 @@ export function RinseAfterLastBrewIntent(this: Handler) {
             if (brewIndex === -1) {
                 return 'You have never brewed on this machine';
             }
-            if (brewIndex !== 0) {
+            if (brewIndex === 0) {
+                if (sessions[0].isActive) {
+                    let output: string = 'You are brewing now. ';
+
+                    if (sessions.length > 1) {
+                        // brewing now, get the last brew before that and check
+                        brewIndex = sessions.slice(1).findIndex((sess) => sess.brewType === 'Brewing');
+                        if (brewIndex != -1) {
+                            switch (sessions[brewIndex - 1].brewType) {
+                                case 'Rinse':
+                                    output += 'Though after your previous brew you did. ';
+                                    break;
+
+                                case 'Cleaning':
+                                    output += 'Though after your previous brew you cleaned. ';
+                                    break;
+
+                                default:
+                                    output += 'Though after your previous brew you did NOT. ';
+
+                            }
+                        }
+                    }
+
+                    output += 'Don\'t forget to rinse this time!';
+
+                    return output;
+                }
+            }
+            else {
                 switch (sessions[brewIndex - 1].brewType) {
                     case 'Rinse':
                         return 'Yes, you did';
@@ -41,7 +70,7 @@ export function RinseAfterLastBrewIntent(this: Handler) {
                 }
             }
 
-            return 'You did NOT rinse after your last brew';
+            return 'No, You did NOT rinse after your last brew';
         })
         .then((msg: string) => {
             this.emit(':tell', msg);
