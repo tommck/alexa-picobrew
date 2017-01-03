@@ -23,9 +23,10 @@ NOTE: This is written using TypeScript and NodeJS
     "...when's the last time I brewed"
     "...when did I brew last"
 
-    Alexa: "The last time you brewed was Last Wednesday at 4:36pm"
-    Alexa: "The last time you brewed was December 25th, 2016 at 11:07am"
-
+    Alexa: "You have never brewed on this machine"
+    Alexa: "Didn't you know? Your machine is currently brewing 'Hop Bomb 5000'. The current step is 'Dough In'"
+    Alexa: "The last time you brewed was Last Wednesday at 4:36pm. It was called 'Nasty Boh'"
+    Alexa: "The last time you brewed was December 25th, 2016 at 11:07am. It was called 'Meister Chow'"
 
 ## Did I Rinse?
     "...if I rinsed after my last brew"
@@ -48,6 +49,16 @@ NOTE: This is written using TypeScript and NodeJS
 ## Future Features:
 
     **more to come**
+
+# Limitations
+**WARNING: This only works for Zymatics and only if you have ONE Zymatic**
+
+I personally own a single Zymatic and zero Picos.
+Therefore, I don't have the ability to work with/test a situation with more than one Zymatic or any Picos.
+
+If you have more than one Zymatic, it will just pick the first one returned from the picobrew website.
+
+If anyone out there wants to help me with that, please contact me by email: *tommck at gmail dot com*
 
 # How it works
 TODO
