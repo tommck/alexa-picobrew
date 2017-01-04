@@ -16,6 +16,16 @@ All you need to integrate your [PicoBrew Zymatic](https://picobrew.com/Store/pro
     Alexa: "Your machine is currently Cleaning. The current step is 'Heat Water'"
     Alexa: "Your machine is idle"
 
+## Time Left
+        "...how much time is left"
+        "...when this brew will end"
+        "...when it will be finished"
+
+    Alexa: "You are not currently brewing"
+    Alexa: "You have been brewing for about 2 hours and 10 minutes. You have approximately 1 hour and 47 minutes left"
+
+*NOTE: This is a rough estimate and doesn't take into account pauses, etc.*
+
 ## Last Brew
 
     "...when my last brew was"
@@ -80,4 +90,6 @@ TODO
 This is written using TypeScript and NodeJS.
 
 # Acknowldgements
-Thanks to [Ryan Graciano](http://ryangraciano.com) and his [echo-sonos](https://github.com/rgraciano/echo-sonos) project for inspiring me to take this on.
+Thanks to the following for inspiring this project:
+* [Ryan Graciano](http://ryangraciano.com) and his [echo-sonos](https://github.com/rgraciano/echo-sonos) project, and
+* Todd Quessenberry and his [whatspicobrewing](https://github.com/toddq/whatspicobrewing) project

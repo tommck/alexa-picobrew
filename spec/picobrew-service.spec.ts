@@ -16,6 +16,36 @@ describe('picobrew-service', () => {
         return new PicoBrew.PicoBrewService();
     }
 
+    describe('login', () => {
+        it('should post the user/pass to the proper url', (done) => {
+            // resolved response actually comes from
+            let response: any = Promise.resolve({});
+            // form is just a pass-through
+            response.form = jasmine.createSpy('requestPromise').and.returnValue(response);
+
+            let mockRequestPromise: any = jasmine.createSpy('requestPromise').and.returnValue(response);
+
+            service = createService(mockRequestPromise);
+
+            service.login(config.picobrew.auth.user, config.picobrew.auth.pass).then(() => {
+                expect(mockRequestPromise).toHaveBeenCalledWith({
+                    method: 'POST',
+                    url: 'https://picobrew.com/account/loginAjax.cshtml?returnURL=https://picobrew.com/members/user/brewhouse.cshtml',
+                    followAllRedirects: true,
+                    jar: true,
+                    json: true,
+                    headers: jasmine.any(Object)
+                });
+
+                expect(response.form).toHaveBeenCalledWith({
+                    username: config.picobrew.auth.user,
+                    password: config.picobrew.auth.pass
+                });
+                done();
+            });
+        });
+    });
+
     describe('getMachines', () => {
         beforeEach(() => {
             var machines = [{
@@ -63,7 +93,7 @@ describe('picobrew-service', () => {
             }];
 
             // resolved response actually comes from
-            let response:any = Promise.resolve(machines);
+            let response: any = Promise.resolve(machines);
             // form is just a pass-through
             response.form = jasmine.createSpy('requestPromise').and.returnValue(response);
 

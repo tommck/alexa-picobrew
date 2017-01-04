@@ -11,22 +11,6 @@ export function BrewsSinceCleaningIntent(this: Handler) {
 
     const service = PicoBrewServiceFactory.createService();
 
-    function compareSessionsByStartTime(left: ISession, right: ISession): number {
-        var leftTime = moment(left.startTime);
-        var rightTime = moment(right.startTime);
-
-        // NOTE: descending order
-        let result: number = 0;
-        if (leftTime > rightTime) {
-            result = -1;
-        }
-        else if (leftTime < rightTime) {
-            result = 1;
-        }
-
-        return result;
-    }
-
     service.login(config.picobrew.auth.user, config.picobrew.auth.pass)
         .then(() => {
             return service.getSessionHistory();
@@ -43,7 +27,7 @@ export function BrewsSinceCleaningIntent(this: Handler) {
             var noRinses = sessions.filter((sess) => sess.brewType !== 'Rinse');
 
             // sort by start time
-            noRinses.sort(compareSessionsByStartTime);
+            noRinses.sort(intentHelpers.compareSessionsByStartTimeDescending);
 
             // find the first cleaning
             let cleaningIndex = noRinses.findIndex((sess) => sess.brewType === 'Cleaning');

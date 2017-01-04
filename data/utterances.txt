@@ -21,3 +21,7 @@ RinseAfterLastBrewIntent if I rinsed after my last brew
 RinseAfterLastBrewIntent did I rinse after my last brew
 RinseAfterLastBrewIntent did I rinse after the last brew
 RinseAfterLastBrewIntent if I rinsed
+
+TimeLeftIntent how much time is left
+TimeLeftIntent when this brew will end
+TimeLeftIntent when it will be finished

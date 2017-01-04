@@ -4,3 +4,7 @@ export * from './session.interface';
 export * from './step.interface';
 export * from './machine-info.interface';
 export * from './server-helpers';
+export * from './log-entry.interface';
+export * from './recipe.interface';
+export * from './recipe-summary.interface';
+export * from './active-session.interface';

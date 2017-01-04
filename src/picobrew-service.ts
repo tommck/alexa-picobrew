@@ -8,25 +8,71 @@ import { log } from './common/log';
 import * as API from './picobrew/index';
 
 export interface IPicoBrewService {
-    getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary>;
+    login(user: string, pass: string): requestPromise.RequestPromise;
+
     getMachines(): Promise<API.IMachineInfo[]>;
     getMachineState(id: number): Promise<API.IMachineInfo>;
     getSessionHistory(): Promise<API.ISession[]>;
 
-    login(user: string, pass: string): requestPromise.RequestPromise;
+    getCurrentLogEntries(userId: string): Promise<API.ILogEntry[]>;
+    getAllRecipeSummaries(): Promise<API.IRecipeSummary[]>;
+
+    getRecipesForMachine(userId: string, machineSerialNumber: string): Promise<API.IRecipe[]>;
+
+    getActiveSession(userId: string): Promise<API.IActiveSession>;
 
     // TODO: add more functions
 }
 
 export class PicoBrewService implements IPicoBrewService {
-    private basePath = 'https://picobrew.com/Json/brewhouseJson.cshtml?user=' + config.picobrew.userId;
 
     // strange constructor trick to allow mocking in tests
     constructor(private rp: typeof requestPromise = require('request-promise')) {
-        log.info('CONSTRUCTED');
     }
 
-    getSessionHistory() : Promise<API.ISession[]> {
+    getActiveSession(userId: string): Promise<API.IActiveSession> {
+        log.info(`Getting active session for ${userId}`);
+        return this
+            .send('GET', `https://picobrew.com/Json/brewhouseJson.cshtml?user=${userId}&justname=3`)
+            .then((response: any) => {
+                return API.serverHelpers.convertReponseToActiveSession(response);
+            })
+    }
+
+    getCurrentLogEntries(userId: string): Promise<API.ILogEntry[]> {
+        log.info(`Getting Log Entries for ${userId}`);
+        return this
+            .send('GET', `https://picobrew.com/Json/brewhouseJson.cshtml?user=${userId}`)
+            .then((response: string) => {
+                return API.serverHelpers.convertResponseToLogEntries(response);
+            });
+    }
+
+    getRecipesForMachine(userId: string, machineSerialNumber: string): Promise<API.IRecipe[]> {
+        log.info(`Getting Recipes for ${userId}/${machineSerialNumber}`);
+        return this
+            .send('GET', `https://picobrew.com/API/SyncUser?user=${userId}&machine=${machineSerialNumber}`)
+            .form({
+                option: 'getAllRecipesForUser'
+            })
+            .then((response: string) => {
+                return API.serverHelpers.convertReponseToRecipes(response);
+            });
+    }
+
+    getAllRecipeSummaries(): Promise<API.IRecipeSummary[]> {
+        return this
+            .send('POST', `https://picobrew.com/JSONAPI/Zymatic/ZymaticRecipe.cshtml`)
+            .form({
+                option: 'getAllRecipesForUser'
+            })
+            .then((response: string) => {
+                return API.serverHelpers.convertReponseToRecipeSummaries(response);
+            });
+    }
+
+
+    getSessionHistory(): Promise<API.ISession[]> {
         return this
             .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/ZymaticSession.cshtml')
             .form({
@@ -35,34 +81,15 @@ export class PicoBrewService implements IPicoBrewService {
             .then((sessions: any[]) => {
                 let result: API.ISession[] = [];
                 sessions.forEach((sess: any) => {
-                    result.push(API.serverHelpers.ResponseToISession(sess));
+                    result.push(API.serverHelpers.convertResponseToISession(sess));
                 });
                 return result;
             });
     }
 
-    getSessionInfo(sessionId: API.GUID): Promise<API.ISessionSummary> {
-        return this.get(`${this.basePath}&requestGUID=${sessionId}&ignoreWhetherCurrent=true&justname=3&_=${new Date().getTime()}`)
-            .then((data: any): API.ISessionSummary => {
-                if (data === '""') {
-                    log.error('no data for sessionId', data);
-                    return;
-                }
-                log.debug('session info: ', data);
-                var result: API.ISessionSummary = {
-                    sessionId: sessionId,
-                    name: data.Name,
-                    description: data.TastingNotes,
-                    ibu: data.IBU,
-                    og: data.OG,
-                    srm: data.SRM,
-                    style: data.StyleNameCode
-                };
-
-                return result;
-            });
-    }
-
+    /**
+     * returns the GUID user ID
+     */
     login(user: string, pass: string): requestPromise.RequestPromise {
         log.info('Logging in');
 
@@ -70,11 +97,12 @@ export class PicoBrewService implements IPicoBrewService {
         var url = 'https://picobrew.com/account/loginAjax.cshtml?returnURL=https://picobrew.com/members/user/brewhouse.cshtml';
 
         return this.send('POST', url, {
-            resolveWithFullResponse: true,
-            followAllRedirects: true
+            followAllRedirects: true // if I don't do this, I need to do custom processing to look for a 302
         }).form({
             username: user,
             password: pass
+        }).then((result) => {
+            return API.serverHelpers.getUserIdFromLoginResponse(result);
         });
     }
 
@@ -92,7 +120,7 @@ export class PicoBrewService implements IPicoBrewService {
             })
             .then((mach: any) => {
                 log.debug('Results of POST:', mach);
-                return API.serverHelpers.ResponseToIMachineInfo(mach);
+                return API.serverHelpers.convertResponseToIMachineInfo(mach);
             });
     }
 
@@ -110,7 +138,7 @@ export class PicoBrewService implements IPicoBrewService {
             .then((data: any[]) => {
                 let result: API.IMachineInfo[] = [];
                 data.forEach((mach: any) => {
-                    result.push(API.serverHelpers.ResponseToIMachineInfo(mach));
+                    result.push(API.serverHelpers.convertResponseToIMachineInfo(mach));
                 });
                 log.debug('Returning Machines', result);
                 return result;

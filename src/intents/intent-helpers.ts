@@ -43,16 +43,8 @@ export const intentHelpers = {
         var leftTime = moment(left.startTime);
         var rightTime = moment(right.startTime);
 
-        // NOTE: descending order
-        let result: number = 0;
-        if(leftTime > rightTime) {
-            result = -1;
-        }
-        else if (leftTime < rightTime) {
-            result = 1;
-        }
-
-        return result;
+        // compare right-left to make it descending
+        return rightTime.diff(leftTime);
     }
 
 };

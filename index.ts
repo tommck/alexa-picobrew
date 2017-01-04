@@ -14,7 +14,8 @@ export class handler {
             StatusIntent: intents.StatusIntent,
             LastBrewIntent: intents.LastBrewIntent,
             BrewsSinceCleaningIntent: intents.BrewsSinceCleaningIntent,
-            RinseAfterLastBrewIntent: intents.RinseAfterLastBrewIntent
+            RinseAfterLastBrewIntent: intents.RinseAfterLastBrewIntent,
+            TimeLeftIntent: intents.TimeLeftIntent
         });
         alexa.execute();
     }

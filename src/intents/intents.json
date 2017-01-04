@@ -19,6 +19,10 @@
         {
             "intent": "RinseAfterLastBrewIntent",
             "slots": []
+        },
+        {
+            "intent": "TimeLeftIntent",
+            "slots": []
         }
    ]
 }
