@@ -1,5 +1,5 @@
-import * as common from './common';
 import { Moment } from 'moment';
+import * as common from './common';
 
 export interface IRecipeSummary {
     id: number;
@@ -10,8 +10,8 @@ export interface IRecipeSummary {
     abv: number;
     ibu: number;
     srm: number;
-    lastBrewed: Moment; // datetime
+    lastBrewed: Moment;
     // ImageLocation
     guid: common.GUID;
-    isSynced: boolean
+    isSynced: boolean;
 }

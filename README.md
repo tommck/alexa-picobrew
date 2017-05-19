@@ -74,6 +74,36 @@ If anyone out there wants to help me with that, please contact me by email: *tom
 TODO
 
 # Setup
+
+## Building the code
+
+* Install NodeJS (latest LTS is probably fine, though Amazon currently uses 4.2)
+* Either download the code or use `git` if you're familiar.
+* In the `alexa-picobrew` folder run `npm install` -- This will install all the dependencies
+* Edit the `src/config.ts` file to the following fields:
+  * appId - your Amazon Skill ID - **can be fake to start with, but will need to be updated before deploying to AWS**
+  * picobrew.auth.user - the ID you use to login to the PicoBrew website
+  * picobrew.auth.pass - the password for that ID
+* run `npm run build` -- This should result in no errors
+* run `npm run test` -- this will run unit tests (not real connection)
+
+## Testing the code
+In order to test everything **without** Alexa involved, you can run things from your own machine.
+
+To do this, edit the `spec/picobrew-service.spec.ts` file and change the following line near the top of the file
+
+```js
+    var USE_FAKE_CALLS = true;
+```
+to
+```js
+    var USE_FAKE_CALLS = false;
+```
+
+This will cause the 'test' code to actually make calls to the PicoBrew website instead.
+
+Now, if you run `npm run test`, all the tests will actually hit PicoBrew's servers.
+
 ## Create the Alexa Skill
 TODO
 
@@ -84,7 +114,9 @@ TODO
 TODO
 
 # TroubleShooting
-TODO
+First recommendation is to follow the instructions in the "Testing the code" section above to run then locally on your machine.
+
+TODO: More Info
 
 # Technologies
 This is written using TypeScript and NodeJS.

@@ -2,24 +2,23 @@ import { config } from '../src/config';
 
 export function createTestEvent(intent) {
     return {
-        "session": {
-            "new": true,
-            "sessionId": "session1234",
-            "attributes": {},
-            "user": {
-                "userId": null
+        request: {
+            intent,
+            locale: 'en-US',
+            requestId: 'request5678',
+            type: 'IntentRequest'
+        },
+        session: {
+            application: {
+                applicationId: config.appId
             },
-            "application": {
-                "applicationId": config.appId
+            attributes: {},
+            new: true,
+            sessionId: 'session1234',
+            user: {
+                userId: null
             }
         },
-        "version": "1.0",
-        "request": {
-            "locale": "en-US",
-            "type": "IntentRequest",
-            "intent": intent,
-            "requestId": "request5678"
-        }
-    }
+        version: '1.0'
+    };
 }
-
