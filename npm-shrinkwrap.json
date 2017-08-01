@@ -1257,6 +1257,12 @@
       "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.1.7.tgz",
       "dev": true
     },
+    "rimraf": {
+      "version": "2.6.1",
+      "from": "rimraf@latest",
+      "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
+      "dev": true
+    },
     "safe-buffer": {
       "version": "5.0.1",
       "from": "safe-buffer@>=5.0.1 <6.0.0",
@@ -1429,6 +1435,12 @@
       "version": "1.6.0",
       "from": "typemoq@>=1.0.3 <2.0.0",
       "resolved": "https://registry.npmjs.org/typemoq/-/typemoq-1.6.0.tgz",
+      "dev": true
+    },
+    "typescript": {
+      "version": "2.4.2",
+      "from": "typescript@latest",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.4.2.tgz",
       "dev": true
     },
     "undefsafe": {

@@ -27,8 +27,10 @@
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
     "proxyquire": "^1.7.10",
+    "rimraf": "^2.6.1",
     "sinon": "^1.17.7",
     "typemoq": "^1.0.3",
+    "typescript": "^2.4.2",
     "watch": "latest"
   }
 }
