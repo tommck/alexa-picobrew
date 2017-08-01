@@ -46,7 +46,7 @@ xdescribe('TimeLeftIntent', () => {
             });
         });
 
-        fit('should say the machine is idle', (done) => {
+        it('should say the machine is idle', (done) => {
             ctx.Promise.then(data => {
                 expect(data.response.outputSpeech).toEqual({
                     type: 'SSML',
