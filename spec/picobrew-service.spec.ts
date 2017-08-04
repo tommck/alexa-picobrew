@@ -26,7 +26,7 @@ describe('picobrew-service', () => {
             let mockRequestPromise: any = jasmine.createSpy('requestPromise').and.returnValue(response);
 
             service = createService(mockRequestPromise);
-
+            
             service.login(config.picobrew.auth.user, config.picobrew.auth.pass).then(() => {
                 expect(mockRequestPromise).toHaveBeenCalledWith({
                     method: 'POST',
@@ -106,8 +106,8 @@ describe('picobrew-service', () => {
             return service
                 .login(config.picobrew.auth.user, config.picobrew.auth.pass)
                 .then(() => service.getMachines())
-                .then((machines: IMachineInfo[]) => {
-                    expect(machines.length).toEqual(1);
+                .then((machines: IMachineInfo[]) => {                    
+                    expect(machines.length).toEqual(2); // TODO: Properly mock for single machine
                     done();
                 });
         });

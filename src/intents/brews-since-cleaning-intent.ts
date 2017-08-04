@@ -23,6 +23,26 @@ export function BrewsSinceCleaningIntent(this: Handler) {
                 return 'You have never cleaned or brewed on this machine';
             }
 
+            // Special case: Pico doesn't record 'Cleaning' sessions in PicoSession API; just report brews since last clean here
+            // If Pico sessions exist, just assume Pico. This needs fixes for multi-machine configuration.
+            var picoSessions = sessions.filter((sess) => sess.machineType === 'Pico');
+            if(picoSessions.length !== 0) {
+                picoSessions.sort(intentHelpers.compareSessionsByStartTimeDescending);
+
+                return service.getMachines()
+                    .then(function(machines) {
+                        // machines should never be 0 here, unless user deregisters, I guess. Check anyway.
+                        if(machines.length === 0) {
+                            return 'No machines were found';
+                        }
+
+                        let brewsUntilClean = machines[0].maxBrewsBeforeClean - machines[0].brewsSinceLastClean;
+                        let brewPlurality = brewsUntilClean == 1 ? 'brew' : 'brews';
+
+                        return 'You last cleaned ' + machines[0].brewsSinceLastClean + ' brews ago. You will need to clean in ' + brewsUntilClean + ' ' + brewPlurality;
+                    })
+            }
+
             // remove rinses
             var noRinses = sessions.filter((sess) => sess.brewType !== 'Rinse');
 

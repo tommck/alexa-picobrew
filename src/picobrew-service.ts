@@ -11,7 +11,7 @@ export interface IPicoBrewService {
     login(user: string, pass: string): requestPromise.RequestPromise;
 
     getMachines(): Promise<API.IMachineInfo[]>;
-    getMachineState(id: number): Promise<API.IMachineInfo>;
+    getMachineState(id: number, machineType: string): Promise<API.IMachineInfo>;
     getSessionHistory(): Promise<API.ISession[]>;
 
     getCurrentLogEntries(userId: string): Promise<API.ILogEntry[]>;
@@ -29,6 +29,13 @@ export class PicoBrewService implements IPicoBrewService {
     // strange constructor trick to allow mocking in tests
     constructor(private rp: typeof requestPromise = require('request-promise')) {
     }
+
+    // TODO: Pico active session uses URLs like this:
+    // https://picobrew.com/Json/picoBrewhouseJson.cshtml?usertimeoffset=6&time=1501823017112&requestGUID=
+    // Note the 'pico' prefix, and differing GET parameters.
+    // Response JSON appears like:
+    // {"success":false,"errorMessage":"Could not find the session","data":[],"lastStep":null,"firmware":null,"notes":null,"recipeName":null,"brewerName":null}
+    // Significant variance from Zymatic's response. Implement properly, once active session data is capturable.
 
     getActiveSession(userId: string): Promise<API.IActiveSession> {
         log.info(`Getting active session for ${userId}`);
@@ -73,8 +80,28 @@ export class PicoBrewService implements IPicoBrewService {
 
 
     getSessionHistory(): Promise<API.ISession[]> {
+        return Promise.all([
+            this.getSessionHistoryByPrefix('Zymatic'),
+            this.getSessionHistoryByPrefix('Pico')
+        ])
+        .then(([zSession, sSession]) => {
+            let result: API.ISession[] = [];
+
+            zSession.forEach((zsess: any) => {
+                result.push(zsess);
+            })
+
+            sSession.forEach((ssess:any) => {
+                result.push(ssess);
+            })
+
+            return result;
+        })
+    }
+
+    private getSessionHistoryByPrefix(prefix: string): Promise<API.ISession[]> {
         return this
-            .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/ZymaticSession.cshtml')
+            .send('POST', 'https://picobrew.com/JSONAPI/' + prefix + '/' + prefix + 'Session.cshtml')
             .form({
                 option: 'getAllSessionsForUser'
             })
@@ -106,16 +133,16 @@ export class PicoBrewService implements IPicoBrewService {
         });
     }
 
-    getMachineState(id: number): Promise<API.IMachineInfo> {
-        log.info(`Getting Machine state for ID:${id}`);
+    getMachineState(id: number, machineType: string): Promise<API.IMachineInfo> {
+        log.info(`Getting Machine state for ID:${id} [type=` + machineType + `]`);
 
         return this
-            .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
+            .send('POST', 'https://picobrew.com/JSONAPI/' + machineType + '/' + machineType + '.cshtml', {
                 followAllRedirects: true
             })
             .form({
                 id: id,
-                option: 'getZymatic',
+                option: 'get' + machineType,
                 getActiveSession: true
             })
             .then((mach: any) => {
@@ -125,14 +152,33 @@ export class PicoBrewService implements IPicoBrewService {
     }
 
     getMachines(): Promise<API.IMachineInfo[]> {
-        log.info('Getting Machines');
+        return Promise.all([
+            this.getMachinesByPrefix('Zymatic'),
+            this.getMachinesByPrefix('Pico')
+        ])
+        .then(([zymatics, picos]) => {
+            let result: API.IMachineInfo[] = [];
+
+            zymatics.forEach((zmach: any) => {
+                result.push(zmach);
+            })
+            picos.forEach((smach: any) => {
+                result.push(smach);
+            })
+
+            return result;
+        })
+    }
+
+    private getMachinesByPrefix(prefix: string): Promise<API.IMachineInfo[]> {
+        log.info('Getting ' + prefix + ' Machines');
 
         return this
-            .send('POST', 'https://picobrew.com/JSONAPI/Zymatic/Zymatic.cshtml', {
+            .send('POST', 'https://picobrew.com/JSONAPI/' + prefix + '/' + prefix + '.cshtml', {
                 followAllRedirects: true
             })
             .form({
-                option: 'getZymaticsForUser',
+                option: 'get' + prefix + 'sForUser',
                 getActiveSession: false
             })
             .then((data: any[]) => {
@@ -140,7 +186,8 @@ export class PicoBrewService implements IPicoBrewService {
                 data.forEach((mach: any) => {
                     result.push(API.serverHelpers.convertResponseToIMachineInfo(mach));
                 });
-                log.debug('Returning Machines', result);
+
+                log.debug('Returning ' + prefix + ' Machines', result);
                 return result;
             })
     }
