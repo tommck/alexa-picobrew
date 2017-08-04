@@ -27,7 +27,8 @@ export function StatusIntent(this: Handler) {
             if (machines.length === 0) {
                 return 'No Machines were found';
             }
-            return service.getMachineState(machines[0].id);
+
+            return service.getMachineState(machines[0].id, machines[0].type);
         })
         .then((status: IMachineInfo | string) => {
             log.info('Machine State:', status);

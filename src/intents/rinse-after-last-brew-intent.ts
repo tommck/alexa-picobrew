@@ -23,6 +23,12 @@ export function RinseAfterLastBrewIntent(this: Handler) {
                 return 'You have never brewed on this machine';
             }
 
+            // Special case: Pico S doesn't record this data. Just halt intent if no Z sessions found.
+            let zSessionsIndex = sessions.findIndex((sess) => sess.machineType === 'Zymatic');
+            if(zSessionsIndex === -1) {
+                return 'This feature only works for Zymatic machines. Sorry.';
+            }
+
             // sort by start time
             sessions.sort(intentHelpers.compareSessionsByStartTimeDescending);
 

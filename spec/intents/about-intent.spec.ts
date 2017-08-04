@@ -26,7 +26,7 @@ describe('AboutIntent', () => {
         return ctx.Promise.then((speechResponse) => {
             expect(speechResponse.response.outputSpeech).toEqual({
                 type: 'SSML',
-                ssml: '<speak> This skill was written by Tom McKearney </speak>'
+                ssml: '<speak> This skill was written by Tom McKearney with Pico S contributions by Justin Lindh </speak>'
             });
             done();
         });
